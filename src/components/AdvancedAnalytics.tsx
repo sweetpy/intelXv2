@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Brain, 
-  TrendingUp, 
-  Target, 
-  AlertTriangle, 
-  Zap, 
+import {
+  Brain,
+  TrendingUp,
+  Target,
+  AlertTriangle,
+  Zap,
   BarChart3,
   PieChart,
   Activity,
@@ -18,98 +18,32 @@ import {
   Package,
   DollarSign
 } from 'lucide-react';
-
-interface PredictiveModel {
-  id: string;
-  name: string;
-  accuracy: number;
-  prediction: string;
-  confidence: number;
-  trend: 'up' | 'down' | 'stable';
-  impact: 'high' | 'medium' | 'low';
-}
-
-interface MarketIntelligence {
-  competitor: string;
-  marketShare: number;
-  recentActivity: string;
-  threat: 'high' | 'medium' | 'low';
-  recommendation: string;
-}
+import {
+  PREDICTIVE_MODELS,
+  MARKET_INTELLIGENCE,
+  ANALYSIS_TIMEOUT_MS,
+  type PredictiveModel,
+  type MarketIntelligence
+} from '../config/analytics';
 
 const AdvancedAnalytics: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState('3months');
   const [selectedRegion, setSelectedRegion] = useState('all');
+  const [predictiveModels, setPredictiveModels] = useState<PredictiveModel[]>([]);
+  const [marketIntelligence, setMarketIntelligence] = useState<MarketIntelligence[]>([]);
 
-  const predictiveModels: PredictiveModel[] = [
-    {
-      id: 'demand-forecast',
-      name: 'Demand Forecasting',
-      accuracy: 94.2,
-      prediction: '25% increase in FMCG demand for Q2 2024',
-      confidence: 89,
-      trend: 'up',
-      impact: 'high'
-    },
-    {
-      id: 'price-optimization',
-      name: 'Price Optimization',
-      accuracy: 87.5,
-      prediction: '12% margin improvement with dynamic pricing',
-      confidence: 82,
-      trend: 'up',
-      impact: 'medium'
-    },
-    {
-      id: 'churn-prediction',
-      name: 'Customer Churn',
-      accuracy: 91.8,
-      prediction: '15 distributors at risk in next 30 days',
-      confidence: 76,
-      trend: 'down',
-      impact: 'high'
-    },
-    {
-      id: 'market-expansion',
-      name: 'Market Expansion',
-      accuracy: 88.3,
-      prediction: 'Mbeya region shows 32% growth potential',
-      confidence: 85,
-      trend: 'up',
-      impact: 'high'
-    }
-  ];
-
-  const marketIntelligence: MarketIntelligence[] = [
-    {
-      competitor: 'Competitor A',
-      marketShare: 28.5,
-      recentActivity: 'Launched new product line in Dar es Salaam',
-      threat: 'high',
-      recommendation: 'Deploy counter-strategy within 48 hours'
-    },
-    {
-      competitor: 'Competitor B',
-      marketShare: 22.1,
-      recentActivity: 'Expanded distribution network in Mwanza',
-      threat: 'medium',
-      recommendation: 'Monitor closely and strengthen partnerships'
-    },
-    {
-      competitor: 'Competitor C',
-      marketShare: 18.7,
-      recentActivity: 'Price reduction campaign in Arusha',
-      threat: 'medium',
-      recommendation: 'Consider promotional response'
-    }
-  ];
+  useEffect(() => {
+    // In a real application this could be replaced with a Supabase query
+    setPredictiveModels(PREDICTIVE_MODELS);
+    setMarketIntelligence(MARKET_INTELLIGENCE);
+  }, []);
 
   const runAnalysis = () => {
     setIsAnalyzing(true);
     setTimeout(() => {
       setIsAnalyzing(false);
-    }, 3000);
+    }, ANALYSIS_TIMEOUT_MS);
   };
 
   const getTrendIcon = (trend: string) => {
