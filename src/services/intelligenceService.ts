@@ -61,140 +61,30 @@ export class IntelligenceService {
         .update({ analysis_status: 'processing' })
         .eq('id', fileId);
 
-      // Simulate AI analysis (in production, this would call actual AI service)
-      setTimeout(async () => {
-        try {
-          const analysisResults = await this.simulateAIAnalysis(fileId);
-          
-          // Update file with analysis results
-          await supabase
-            .from('intelligence_files')
-            .update({
-              analysis_status: 'completed',
-              ai_tags: analysisResults.tags,
-              summary: analysisResults.summary,
-              key_findings: analysisResults.keyFindings,
-              actionable_items: analysisResults.actionableItems,
-              confidence_score: analysisResults.confidence,
-              relevance_score: analysisResults.relevance
-            })
-            .eq('id', fileId);
+      const response = await fetch(`${import.meta.env.VITE_AI_SERVICE_URL}/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileId })
+      });
 
-          // Create AI insights
-          for (const insight of analysisResults.insights) {
-            await supabase
-              .from('ai_insights')
-              .insert({
-                ...insight,
-                file_id: fileId
-              });
-          }
-        } catch (error) {
-          console.error('AI analysis error:', error);
-          await supabase
-            .from('intelligence_files')
-            .update({ analysis_status: 'failed' })
-            .eq('id', fileId);
-        }
-      }, 2000);
+      if (!response.ok) {
+        throw new Error(`AI service responded with ${response.status}`);
+      }
+
+      const { jobId } = await response.json();
+
+      await supabase
+        .from('intelligence_files')
+        .update({ ai_job_id: jobId })
+        .eq('id', fileId);
     } catch (error) {
       console.error('Error triggering AI analysis:', error);
+      await supabase
+        .from('intelligence_files')
+        .update({ analysis_status: 'failed' })
+        .eq('id', fileId);
+      throw error;
     }
-  }
-
-  // Simulate AI analysis (replace with actual AI service in production)
-  static async simulateAIAnalysis(fileId: string): Promise<{
-    tags: string[];
-    summary: string;
-    keyFindings: string[];
-    actionableItems: string[];
-    insights: Omit<AIInsightInsert, 'file_id'>[];
-    confidence: number;
-    relevance: number;
-  }> {
-    // Get file info
-    const { data: file } = await supabase
-      .from('intelligence_files')
-      .select('*')
-      .eq('id', fileId)
-      .single();
-
-    if (!file) throw new Error('File not found');
-
-    const fileName = file.name.toLowerCase();
-    const category = file.category;
-
-    // Generate AI tags based on file name and category
-    const aiTags: string[] = [];
-    if (fileName.includes('market')) aiTags.push('market-analysis');
-    if (fileName.includes('competitor')) aiTags.push('competitive-intelligence');
-    if (fileName.includes('consumer')) aiTags.push('consumer-behavior');
-    if (fileName.includes('financial')) aiTags.push('financial-analysis');
-    if (category === 'market-research') aiTags.push('research-data', 'market-trends');
-    if (category === 'competitor-intel') aiTags.push('competition', 'market-share');
-
-    // Generate insights based on category
-    const insights: Omit<AIInsightInsert, 'file_id'>[] = [];
-
-    if (category === 'market-research') {
-      insights.push({
-        insight_type: 'opportunity',
-        title: 'Market Expansion Opportunity Detected',
-        description: 'Analysis reveals untapped market segments with high growth potential in rural Tanzania',
-        confidence: 85 + Math.random() * 10,
-        impact: 'high',
-        timeframe: 'Q2-Q3 2024',
-        priority: 1,
-        action_items: ['Conduct market entry feasibility study', 'Identify key distribution partners'],
-        created_by_ai: true
-      });
-    }
-
-    if (category === 'competitor-intel') {
-      insights.push({
-        insight_type: 'threat',
-        title: 'Competitive Threat Identified',
-        description: 'Competitor activity suggests potential market disruption in key regions',
-        confidence: 75 + Math.random() * 15,
-        impact: 'medium',
-        timeframe: 'Next 6 months',
-        priority: 2,
-        action_items: ['Develop counter-strategy', 'Strengthen market position'],
-        created_by_ai: true
-      });
-    }
-
-    if (category === 'consumer-insights') {
-      insights.push({
-        insight_type: 'trend',
-        title: 'Consumer Behavior Shift Detected',
-        description: 'Significant changes in consumer preferences and purchasing patterns identified',
-        confidence: 80 + Math.random() * 15,
-        impact: 'high',
-        timeframe: 'Ongoing',
-        priority: 1,
-        action_items: ['Adapt product offerings', 'Modify distribution strategy'],
-        created_by_ai: true
-      });
-    }
-
-    return {
-      tags: aiTags,
-      summary: `AI analysis of ${file.name} reveals valuable insights for strategic decision-making and market optimization.`,
-      keyFindings: [
-        'Market penetration opportunities identified in underserved regions',
-        'Consumer behavior patterns suggest new distribution channels',
-        'Competitive landscape analysis reveals strategic positioning opportunities'
-      ],
-      actionableItems: [
-        'Develop targeted market entry strategy',
-        'Optimize distribution channel mix',
-        'Implement competitive differentiation tactics'
-      ],
-      insights,
-      confidence: 85 + Math.random() * 10,
-      relevance: 90 + Math.random() * 8
-    };
   }
 
   // Get all intelligence files

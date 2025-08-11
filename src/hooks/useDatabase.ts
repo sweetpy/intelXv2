@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, dbHelpers } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
+import { dbClient } from '../lib/dbClient';
 import type { Database } from '../lib/database.types';
 
 type Tables = Database['public']['Tables'];
@@ -76,30 +77,15 @@ export const useDatabase = () => {
     }, [executeQuery]),
 
     create: useCallback(async (customerData: Tables['customers']['Insert']) => {
-      return executeQuery(async () => {
-        const { data, error } = await supabase
-          .from('customers')
-          .insert(customerData)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        return data;
-      });
+      return executeQuery(async () =>
+        dbClient.create<Tables['customers']['Row']>('customers', customerData)
+      );
     }, [executeQuery]),
 
     update: useCallback(async (id: string, updates: Tables['customers']['Update']) => {
-      return executeQuery(async () => {
-        const { data, error } = await supabase
-          .from('customers')
-          .update(updates)
-          .eq('id', id)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        return data;
-      });
+      return executeQuery(async () =>
+        dbClient.update<Tables['customers']['Row']>('customers', id, updates)
+      );
     }, [executeQuery]),
 
     bulkUpload: useCallback(async (customers: Tables['customers']['Insert'][]) => {
@@ -162,16 +148,9 @@ export const useDatabase = () => {
     }, [executeQuery]),
 
     create: useCallback(async (productData: Tables['products']['Insert']) => {
-      return executeQuery(async () => {
-        const { data, error } = await supabase
-          .from('products')
-          .insert(productData)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        return data;
-      });
+      return executeQuery(async () =>
+        dbClient.create<Tables['products']['Row']>('products', productData)
+      );
     }, [executeQuery])
   };
 

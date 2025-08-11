@@ -23,13 +23,19 @@ import {
   X
 } from 'lucide-react';
 
+interface Insight {
+  type: string;
+  title: string;
+  confidence?: number;
+}
+
 interface ChatMessage {
   id: string;
   type: 'user' | 'ai';
   content: string;
   timestamp: Date;
   attachments?: string[];
-  insights?: any[];
+  insights?: Insight[];
   confidence?: number;
   sources?: string[];
 }
@@ -89,7 +95,7 @@ const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, onMinimize, isMinimize
   const generateAIResponse = (userInput: string): ChatMessage => {
     const input = userInput.toLowerCase();
     let response = '';
-    let insights: any[] = [];
+    let insights: Insight[] = [];
     let confidence = 85;
 
     if (input.includes('market') || input.includes('opportunity')) {
@@ -345,7 +351,7 @@ What specific area would you like to explore?`;
                     type="text"
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                     placeholder={isListening ? "🎤 Listening..." : "Ask me about market insights, opportunities, or innovations..."}
                     className="w-full px-4 py-2 pr-20 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     disabled={isListening}
