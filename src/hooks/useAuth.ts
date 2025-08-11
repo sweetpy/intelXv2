@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { SessionManager, AuditLogger, validatePasswordStrength, rateLimiter } from '../utils/security';
+import { storage } from '../utils/storage';
 
 interface User {
   id: string;
@@ -54,14 +55,14 @@ export const useAuth = () => {
   const sessionManager = SessionManager.getInstance();
   const auditLogger = AuditLogger.getInstance();
 
-  // Initialize auth state from localStorage
+  // Initialize auth state from persistent storage
   useEffect(() => {
     const initializeAuth = async () => {
       setAuthState(prev => ({ ...prev, isLoading: true }));
       
       try {
-        const storedSessionId = localStorage.getItem('intellx_session');
-        const storedUser = localStorage.getItem('intellx_user');
+        const storedSessionId = storage.getItem('intellx_session');
+        const storedUser = storage.getItem('intellx_user');
 
         if (storedSessionId && storedUser) {
           const sessionValidation = sessionManager.validateSession(storedSessionId);
@@ -89,8 +90,8 @@ export const useAuth = () => {
             });
           } else {
             // Clear invalid session
-            localStorage.removeItem('intellx_session');
-            localStorage.removeItem('intellx_user');
+            storage.removeItem('intellx_session');
+            storage.removeItem('intellx_user');
             setAuthState(prev => ({ ...prev, isLoading: false }));
           }
         } else {
@@ -107,7 +108,7 @@ export const useAuth = () => {
 
   // Check for account lockout
   const checkLockout = useCallback((): boolean => {
-    const lockoutData = localStorage.getItem('intellx_lockout');
+    const lockoutData = storage.getItem('intellx_lockout');
     if (lockoutData) {
       const { attempts, timestamp } = JSON.parse(lockoutData);
       const lockoutExpires = new Date(timestamp + 15 * 60 * 1000); // 15 minutes
@@ -122,7 +123,7 @@ export const useAuth = () => {
         return true;
       } else if (new Date() >= lockoutExpires) {
         // Clear expired lockout
-        localStorage.removeItem('intellx_lockout');
+        storage.removeItem('intellx_lockout');
         setAuthState(prev => ({
           ...prev,
           isLocked: false,
@@ -165,11 +166,11 @@ export const useAuth = () => {
         const { sessionId, csrfToken } = sessionManager.createSession(response.user.id);
         
         // Store session and user data
-        localStorage.setItem('intellx_session', sessionId);
-        localStorage.setItem('intellx_user', JSON.stringify(response.user));
+        storage.setItem('intellx_session', sessionId);
+        storage.setItem('intellx_user', JSON.stringify(response.user));
         
         // Clear lockout data on successful login
-        localStorage.removeItem('intellx_lockout');
+        storage.removeItem('intellx_lockout');
         
         setAuthState(prev => ({
           ...prev,
@@ -198,7 +199,7 @@ export const useAuth = () => {
         
         if (currentAttempts >= 5) {
           // Lock account
-          localStorage.setItem('intellx_lockout', JSON.stringify({
+          storage.setItem('intellx_lockout', JSON.stringify({
             attempts: currentAttempts,
             timestamp: Date.now(),
           }));
@@ -259,8 +260,8 @@ export const useAuth = () => {
       }
 
       // Clear stored data
-      localStorage.removeItem('intellx_session');
-      localStorage.removeItem('intellx_user');
+      storage.removeItem('intellx_session');
+      storage.removeItem('intellx_user');
 
       setAuthState({
         user: null,

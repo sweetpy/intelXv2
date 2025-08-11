@@ -2,12 +2,17 @@
 import CryptoJS from 'crypto-js';
 
 // Environment configuration
+const encryptionKey = import.meta.env.VITE_ENCRYPTION_KEY;
+if (!encryptionKey) {
+  throw new Error('Missing VITE_ENCRYPTION_KEY environment variable');
+}
+
 export const SECURITY_CONFIG = {
   SESSION_TIMEOUT: 30 * 60 * 1000, // 30 minutes
   MAX_LOGIN_ATTEMPTS: 5,
   LOCKOUT_DURATION: 15 * 60 * 1000, // 15 minutes
   PASSWORD_MIN_LENGTH: 12,
-  ENCRYPTION_KEY: import.meta.env.VITE_ENCRYPTION_KEY || 'default-key-change-in-production',
+  ENCRYPTION_KEY: encryptionKey,
   API_RATE_LIMIT: 100, // requests per minute
   CSRF_TOKEN_LENGTH: 32,
 };

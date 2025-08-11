@@ -10,7 +10,7 @@ export interface AIAnalysisResult {
   confidence: number;
   relevanceScore: number;
   connections: string[];
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 export interface AIInsight {
@@ -57,7 +57,7 @@ export interface PatternRecognition {
 
 export class AIIntelligenceEngine {
   private static instance: AIIntelligenceEngine;
-  private knowledgeBase: Map<string, any> = new Map();
+  private knowledgeBase: Map<string, unknown> = new Map();
   private patterns: PatternRecognition[] = [];
   private insights: AIInsight[] = [];
   private creativeIdeas: CreativeIdea[] = [];
@@ -70,7 +70,7 @@ export class AIIntelligenceEngine {
   }
 
   // Analyze uploaded file content
-  async analyzeFile(file: File, metadata: any = {}): Promise<AIAnalysisResult> {
+  async analyzeFile(file: File, metadata: Record<string, unknown> = {}): Promise<AIAnalysisResult> {
     const fileId = generateId('file');
     
     // Simulate AI analysis based on file type and content
@@ -91,7 +91,7 @@ export class AIIntelligenceEngine {
     return analysis;
   }
 
-  private async performDeepAnalysis(file: File, metadata: any): Promise<AIAnalysisResult> {
+  private async performDeepAnalysis(file: File, metadata: Record<string, unknown>): Promise<AIAnalysisResult> {
     // Simulate advanced AI analysis
     await new Promise(resolve => setTimeout(resolve, 1000));
 
