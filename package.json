@@ -19,6 +19,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
+    "start": "vite preview --port 8080",
     "type-check": "tsc --noEmit",
     "test": "vitest"
   },
