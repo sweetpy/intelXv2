@@ -174,31 +174,101 @@ const RouteOptimization: React.FC = () => {
             </div>
           </div>
           
-          <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-100 to-blue-100 opacity-50"></div>
-            <div className="text-center z-10">
-              <Map className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg">Interactive Route Map</p>
-              <p className="text-gray-400 text-sm">Real-time route visualization with traffic data</p>
-            </div>
-            
-            {/* Mock route indicators */}
-            <div className="absolute top-4 left-4 bg-white rounded-lg p-2 shadow-sm">
-              <div className="flex items-center text-sm">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                Optimized Route
+          <div className="h-96 bg-gradient-to-br from-blue-50 to-green-50 rounded-lg relative overflow-hidden">
+            {/* SVG Route Map */}
+            <svg viewBox="0 0 800 400" className="w-full h-full">
+              {/* Background grid */}
+              <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E5E7EB" strokeWidth="0.5" />
+                </pattern>
+              </defs>
+              <rect width="800" height="400" fill="url(#grid)" />
+
+              {/* Cities/Warehouses */}
+              <g>
+                {/* Dar es Salaam */}
+                <circle cx="650" cy="300" r="20" fill="#10B981" stroke="white" strokeWidth="3" className="drop-shadow-lg">
+                  <animate attributeName="r" values="20;22;20" dur="2s" repeatCount="indefinite" />
+                </circle>
+                <text x="650" y="340" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Dar es Salaam</text>
+
+                {/* Dodoma */}
+                <circle cx="450" cy="200" r="16" fill="#3B82F6" stroke="white" strokeWidth="3" className="drop-shadow-md" />
+                <text x="450" y="235" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Dodoma</text>
+
+                {/* Mwanza */}
+                <circle cx="200" cy="150" r="16" fill="#8B5CF6" stroke="white" strokeWidth="3" className="drop-shadow-md" />
+                <text x="200" y="185" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Mwanza</text>
+
+                {/* Arusha */}
+                <circle cx="500" cy="100" r="16" fill="#F59E0B" stroke="white" strokeWidth="3" className="drop-shadow-md" />
+                <text x="500" y="135" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Arusha</text>
+
+                {/* Mbeya */}
+                <circle cx="300" cy="320" r="14" fill="#EC4899" stroke="white" strokeWidth="3" className="drop-shadow-md" />
+                <text x="300" y="350" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Mbeya</text>
+              </g>
+
+              {/* Optimized Routes (Green) */}
+              <g stroke="#10B981" strokeWidth="4" fill="none" opacity="0.8">
+                <path d="M 650 300 Q 550 250, 450 200" strokeDasharray="8,4">
+                  <animate attributeName="stroke-dashoffset" from="0" to="24" dur="1s" repeatCount="indefinite" />
+                </path>
+                <path d="M 450 200 Q 325 175, 200 150" strokeDasharray="8,4">
+                  <animate attributeName="stroke-dashoffset" from="0" to="24" dur="1s" repeatCount="indefinite" />
+                </path>
+                <path d="M 500 100 Q 475 150, 450 200" strokeDasharray="8,4">
+                  <animate attributeName="stroke-dashoffset" from="0" to="24" dur="1s" repeatCount="indefinite" />
+                </path>
+              </g>
+
+              {/* Alternative Routes (Yellow) */}
+              <g stroke="#F59E0B" strokeWidth="3" fill="none" opacity="0.4" strokeDasharray="10,5">
+                <path d="M 650 300 Q 500 280, 300 320" />
+                <path d="M 450 200 Q 380 160, 300 320" />
+              </g>
+
+              {/* Traffic Congestion Areas (Red) */}
+              <g fill="#EF4444" opacity="0.2">
+                <circle cx="550" cy="250" r="30" />
+                <circle cx="400" cy="180" r="25" />
+              </g>
+
+              {/* Moving trucks */}
+              <g>
+                <circle cx="550" cy="250" r="8" fill="#10B981">
+                  <animateMotion path="M 0 0 Q -100 -50, -200 -100" dur="5s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="325" cy="175" r="8" fill="#3B82F6">
+                  <animateMotion path="M 0 0 Q -60 -12, -125 -25" dur="4s" repeatCount="indefinite" />
+                </circle>
+              </g>
+            </svg>
+
+            {/* Legend */}
+            <div className="absolute bottom-4 left-4 bg-white rounded-lg p-3 shadow-lg border border-gray-200">
+              <div className="space-y-2">
+                <div className="flex items-center text-sm">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                  <span className="font-medium">Optimized Route</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                  <span className="font-medium">Alternative Route</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                  <span className="font-medium">Traffic Congestion</span>
+                </div>
               </div>
             </div>
-            <div className="absolute top-16 left-4 bg-white rounded-lg p-2 shadow-sm">
+
+            {/* Live tracking badge */}
+            <div className="absolute top-4 right-4 bg-white rounded-lg px-3 py-2 shadow-lg border border-gray-200">
               <div className="flex items-center text-sm">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                Current Route
-              </div>
-            </div>
-            <div className="absolute top-28 left-4 bg-white rounded-lg p-2 shadow-sm">
-              <div className="flex items-center text-sm">
-                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                Traffic Congestion
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                <span className="font-semibold text-gray-700">Live Tracking</span>
               </div>
             </div>
           </div>
