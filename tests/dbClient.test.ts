@@ -1,12 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const mockFrom = vi.fn();
-
-vi.mock('../src/lib/supabase', () => ({
-  supabase: { from: mockFrom }
-}));
+vi.mock('../src/lib/supabase', () => {
+  const mockFrom = vi.fn();
+  return {
+    supabase: { from: mockFrom },
+    mockFrom
+  };
+});
 
 import { dbClient } from '../src/lib/dbClient';
+import { mockFrom } from '../src/lib/supabase';
 
 describe('dbClient', () => {
   beforeEach(() => {

@@ -18,14 +18,12 @@
     - Movement tracking and validation
 */
 
--- Create location type enum
 DO $$ BEGIN
   CREATE TYPE location_type AS ENUM ('warehouse', 'distribution_center', 'retail_outlet', 'office');
 EXCEPTION
   WHEN duplicate_object THEN null;
 END $$;
 
--- Create movement type enum
 DO $$ BEGIN
   CREATE TYPE movement_type AS ENUM ('inbound', 'outbound', 'transfer', 'adjustment', 'return', 'damage', 'expired');
 EXCEPTION
@@ -83,7 +81,7 @@ CREATE TABLE IF NOT EXISTS inventory_movements (
   quantity integer NOT NULL,
   unit_cost numeric DEFAULT 0 CHECK (unit_cost >= 0),
   total_cost numeric GENERATED ALWAYS AS (quantity * unit_cost) STORED,
-  reference_type text, -- 'order', 'transfer', 'adjustment', etc.
+  reference_type text,
   reference_id uuid,
   from_location_id uuid REFERENCES locations(id),
   to_location_id uuid REFERENCES locations(id),
@@ -98,7 +96,7 @@ CREATE TABLE IF NOT EXISTS inventory_movements (
 CREATE TABLE IF NOT EXISTS stock_adjustments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   inventory_id uuid NOT NULL REFERENCES inventory(id) ON DELETE RESTRICT,
-  adjustment_type text NOT NULL, -- 'increase', 'decrease', 'correction'
+  adjustment_type text NOT NULL,
   quantity_before integer NOT NULL,
   quantity_after integer NOT NULL,
   adjustment_quantity integer GENERATED ALWAYS AS (quantity_after - quantity_before) STORED,
@@ -110,13 +108,11 @@ CREATE TABLE IF NOT EXISTS stock_adjustments (
   created_at timestamptz DEFAULT now()
 );
 
--- Enable RLS
 ALTER TABLE locations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inventory_movements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE stock_adjustments ENABLE ROW LEVEL SECURITY;
 
--- Location Policies
 CREATE POLICY "Users can read locations in their region"
   ON locations
   FOR SELECT
@@ -142,7 +138,6 @@ CREATE POLICY "Location managers can manage their locations"
     )
   );
 
--- Inventory Policies
 CREATE POLICY "Users can read inventory in accessible locations"
   ON inventory
   FOR SELECT
@@ -168,7 +163,6 @@ CREATE POLICY "Inventory managers can manage inventory"
     )
   );
 
--- Movement Policies
 CREATE POLICY "Users can read movements for accessible inventory"
   ON inventory_movements
   FOR SELECT
@@ -189,7 +183,6 @@ CREATE POLICY "Users can create movements"
   TO authenticated
   WITH CHECK (created_by = auth.uid());
 
--- Adjustment Policies
 CREATE POLICY "Users can read adjustments for accessible inventory"
   ON stock_adjustments
   FOR SELECT
@@ -217,7 +210,6 @@ CREATE POLICY "Authorized users can create adjustments"
     )
   );
 
--- Indexes
 CREATE INDEX IF NOT EXISTS idx_locations_region ON locations(region);
 CREATE INDEX IF NOT EXISTS idx_locations_type ON locations(type);
 CREATE INDEX IF NOT EXISTS idx_locations_manager ON locations(manager_id);
@@ -236,7 +228,6 @@ CREATE INDEX IF NOT EXISTS idx_movements_reference ON inventory_movements(refere
 CREATE INDEX IF NOT EXISTS idx_adjustments_inventory ON stock_adjustments(inventory_id);
 CREATE INDEX IF NOT EXISTS idx_adjustments_date ON stock_adjustments(adjustment_date);
 
--- Update triggers
 CREATE TRIGGER update_locations_updated_at
   BEFORE UPDATE ON locations
   FOR EACH ROW
@@ -247,7 +238,6 @@ CREATE TRIGGER update_inventory_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
--- Function to update inventory on movements
 CREATE OR REPLACE FUNCTION process_inventory_movement()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -274,7 +264,6 @@ CREATE TRIGGER process_inventory_movement_trigger
   FOR EACH ROW
   EXECUTE FUNCTION process_inventory_movement();
 
--- Function to process stock adjustments
 CREATE OR REPLACE FUNCTION process_stock_adjustment()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -284,7 +273,6 @@ BEGIN
     last_movement_date = NEW.adjustment_date
   WHERE id = NEW.inventory_id;
   
-  -- Create corresponding movement record
   INSERT INTO inventory_movements (
     inventory_id,
     movement_type,
