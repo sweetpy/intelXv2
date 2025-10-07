@@ -1,9 +1,9 @@
-import React from 'react';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  Package, 
+import React, { useState, useEffect } from 'react';
+import {
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Package,
   Truck,
   MapPin,
   BarChart3,
@@ -15,79 +15,95 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { useLocalization } from '../components/LocalizationProvider';
+import { DashboardService, type SystemStat, type RegionalData, type RecentActivity } from '../services/dashboardService';
 
 const Dashboard: React.FC = () => {
   const { formatCurrency, translate, formatDate } = useLocalization();
-  const [isRefreshing, setIsRefreshing] = React.useState(false);
-  const [lastUpdated, setLastUpdated] = React.useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [stats, setStats] = useState<SystemStat[]>([]);
+  const [regions, setRegions] = useState<RegionalData[]>([]);
+  const [activities, setActivities] = useState<RecentActivity[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate real-time data updates
-  React.useEffect(() => {
-    const interval = setInterval(() => {
+  const fetchDashboardData = async () => {
+    try {
+      const data = await DashboardService.getDashboardSummary();
+      setStats(data.stats);
+      setRegions(data.regions);
+      setActivities(data.activities);
       setLastUpdated(new Date());
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+
+    const interval = setInterval(() => {
+      fetchDashboardData();
     }, 30000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    setTimeout(() => {
-      setIsRefreshing(false);
-      setLastUpdated(new Date());
-    }, 2000);
+    await DashboardService.refreshDashboardData();
+    await fetchDashboardData();
+    setIsRefreshing(false);
   };
 
-  const kpis = [
-    {
-      title: 'Total Revenue',
-      value: formatCurrency(2400000000),
-      change: '+12.5%',
-      trend: 'up',
-      icon: DollarSign,
-      color: 'green'
-    },
-    {
-      title: 'Active Distributors',
-      value: '1,247',
-      change: '+8.2%',
-      trend: 'up',
-      icon: Users,
-      color: 'blue'
-    },
-    {
-      title: 'Products Distributed',
-      value: '45,678',
-      change: '-2.1%',
-      trend: 'down',
-      icon: Package,
-      color: 'purple'
-    },
-    {
-      title: 'Routes Optimized',
-      value: '892',
-      change: '+15.3%',
-      trend: 'up',
-      icon: Truck,
-      color: 'orange'
+  const getIconForCategory = (category: string) => {
+    switch (category) {
+      case 'financial': return DollarSign;
+      case 'operations': return Users;
+      case 'inventory': return Package;
+      case 'logistics': return Truck;
+      default: return BarChart3;
     }
-  ];
+  };
 
-  const regions = [
-    { name: 'Dar es Salaam', revenue: formatCurrency(580000000), growth: '+18%', distributors: 245, status: 'excellent' },
-    { name: 'Mwanza', revenue: formatCurrency(320000000), growth: '+12%', distributors: 156, status: 'good' },
-    { name: 'Arusha', revenue: formatCurrency(280000000), growth: '+9%', distributors: 134, status: 'good' },
-    { name: 'Dodoma', revenue: formatCurrency(195000000), growth: '+15%', distributors: 98, status: 'warning' },
-    { name: 'Mbeya', revenue: formatCurrency(165000000), growth: '+7%', distributors: 87, status: 'warning' }
-  ];
+  const getColorForCategory = (category: string) => {
+    switch (category) {
+      case 'financial': return 'green';
+      case 'operations': return 'blue';
+      case 'inventory': return 'purple';
+      case 'logistics': return 'orange';
+      default: return 'gray';
+    }
+  };
 
-  const recentActivities = [
-    { action: 'New distributor onboarded', location: 'Kilimanjaro', time: '2 hours ago', type: 'success' },
-    { action: 'Route optimization completed', location: 'Dar es Salaam', time: '4 hours ago', type: 'success' },
-    { action: 'Inventory alert resolved', location: 'Mwanza', time: '6 hours ago', type: 'warning' },
-    { action: 'Performance report generated', location: 'Arusha', time: '8 hours ago', type: 'info' },
-    { action: 'New product line added', location: 'Dodoma', time: '1 day ago', type: 'success' }
-  ];
+  const kpis = stats.slice(0, 4).map(stat => ({
+    title: stat.stat_label,
+    value: stat.stat_category === 'financial' ? formatCurrency(stat.stat_value) : stat.stat_value.toLocaleString(),
+    change: `${stat.trend_direction === 'up' ? '+' : stat.trend_direction === 'down' ? '-' : ''}${stat.trend_percentage || 0}%`,
+    trend: stat.trend_direction,
+    icon: getIconForCategory(stat.stat_category),
+    color: getColorForCategory(stat.stat_category)
+  }));
+
+  const regionalData = regions.map(region => ({
+    name: region.region,
+    revenue: formatCurrency(region.revenue),
+    growth: region.growth,
+    distributors: region.distributors,
+    status: region.revenue > 500000000 ? 'excellent' : region.revenue > 200000000 ? 'good' : 'warning'
+  }));
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -176,7 +192,7 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
           <div className="space-y-4">
-            {regions.map((region, index) => (
+            {regionalData.map((region, index) => (
               <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                 <div className="flex items-center">
                   <div className="flex items-center mr-3">
@@ -201,7 +217,7 @@ const Dashboard: React.FC = () => {
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-lg transition-shadow duration-300">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Activities</h2>
           <div className="space-y-4">
-            {recentActivities.map((activity, index) => (
+            {activities.map((activity, index) => (
               <div key={index} className="flex items-start space-x-3">
                 <div className="mt-1 flex-shrink-0">
                   {getActivityIcon(activity.type)}

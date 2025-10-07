@@ -1,9 +1,9 @@
 import React from 'react';
-import { 
-  X, 
-  BarChart3, 
-  FileText, 
-  Building2, 
+import {
+  X,
+  BarChart3,
+  FileText,
+  Building2,
   TrendingUp,
   Map,
   Users,
@@ -15,6 +15,8 @@ import {
   UserCheck
 } from 'lucide-react';
 import { useLocalization } from './LocalizationProvider';
+import { useAuth } from '../hooks/useAuth';
+import { canAccessPage } from '../utils/permissions';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -25,6 +27,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, currentPage, onPageChange }) => {
   const { translate } = useLocalization();
+  const { user } = useAuth();
   
   const menuItems = [
     { icon: Home, label: translate('nav.dashboard'), id: 'dashboard', badge: null },
@@ -78,20 +81,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, currentPage, onPageC
 
         <nav className="mt-6 flex-1 overflow-y-auto">
           <div className="px-3">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  handleItemClick(item.id);
-                }}
-                className={`
-                  group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg mb-1 transition-all duration-200 w-full text-left hover:scale-105
-                  ${currentPage === item.id
-                    ? 'bg-gradient-to-r from-green-100 to-blue-100 text-green-700 shadow-md' 
-                    : 'text-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
-                  }
-                `}
-              >
+            {menuItems
+              .filter((item) => !user || canAccessPage(user.role, item.id))
+              .map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    handleItemClick(item.id);
+                  }}
+                  className={`
+                    group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg mb-1 transition-all duration-200 w-full text-left hover:scale-105
+                    ${currentPage === item.id
+                      ? 'bg-gradient-to-r from-green-100 to-blue-100 text-green-700 shadow-md'
+                      : 'text-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:text-gray-900'
+                    }
+                  `}
+                >
                 <div className="flex items-center">
                   <item.icon className={`
                     mr-3 h-5 w-5 transition-colors duration-200

@@ -1,9 +1,9 @@
 import React from 'react';
-import { 
-  ArrowRight, 
-  MapPin, 
-  BarChart3, 
-  Users, 
+import {
+  ArrowRight,
+  MapPin,
+  BarChart3,
+  Users,
   Truck,
   Building2,
   TrendingUp,
@@ -15,19 +15,22 @@ import {
   Zap,
   Brain
 } from 'lucide-react';
+import { AuthModal } from '../components/AuthModal';
 
 interface LandingProps {
   onEnterApp: () => void;
 }
 
 const Landing: React.FC<LandingProps> = ({ onEnterApp }) => {
-  const [isLoading, setIsLoading] = React.useState(false);
-  
+  const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
+
   const handleEnterApp = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      onEnterApp();
-    }, 500);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleAuthSuccess = () => {
+    setIsAuthModalOpen(false);
+    onEnterApp();
   };
 
   const features = [
@@ -97,20 +100,10 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp }) => {
             </div>
             <button
               onClick={handleEnterApp}
-              disabled={isLoading}
-              className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-blue-700 transition-all duration-300 flex items-center shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
+              className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-blue-700 transition-all duration-300 flex items-center shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              {isLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Loading...
-                </>
-              ) : (
-                <>
-                  🚀 Enter Platform
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              )}
+              🚀 Enter Platform
+              <ArrowRight className="ml-2 h-4 w-4" />
             </button>
           </div>
         </div>
@@ -139,22 +132,12 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp }) => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={handleEnterApp}
-                disabled={isLoading}
-                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center shadow-lg hover:shadow-xl animate-glow disabled:opacity-50"
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center shadow-lg hover:shadow-xl animate-glow"
               >
-                {isLoading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                    Launching Platform...
-                  </>
-                ) : (
-                  <>
-                    🚀 Enter Platform
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </>
-                )}
+                🚀 Enter Platform
+                <ArrowRight className="ml-2 h-5 w-5" />
               </button>
-              <button 
+              <button
                 onClick={handleEnterApp}
                 className="border-2 border-green-600 text-green-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
@@ -168,14 +151,9 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp }) => {
         <div className="fixed bottom-8 right-8 z-50">
           <button
             onClick={handleEnterApp}
-            disabled={isLoading}
             className="w-16 h-16 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 flex items-center justify-center group animate-float"
           >
-            {isLoading ? (
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            ) : (
-              <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
-            )}
+            <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-green-400 to-blue-400 opacity-0 group-hover:opacity-30 transition-opacity duration-300 animate-ping"></div>
           </button>
         </div>
@@ -512,20 +490,10 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp }) => {
           </div>
           <button
             onClick={handleEnterApp}
-            disabled={isLoading}
-            className="bg-gradient-to-r from-white to-gray-100 text-gray-900 px-8 py-4 rounded-xl text-lg font-semibold hover:from-gray-100 hover:to-white transition-all duration-300 transform hover:scale-110 inline-flex items-center shadow-2xl hover:shadow-3xl animate-glow disabled:opacity-50"
+            className="bg-gradient-to-r from-white to-gray-100 text-gray-900 px-8 py-4 rounded-xl text-lg font-semibold hover:from-gray-100 hover:to-white transition-all duration-300 transform hover:scale-110 inline-flex items-center shadow-2xl hover:shadow-3xl animate-glow"
           >
-            {isLoading ? (
-              <>
-                <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin mr-2"></div>
-                Launching Platform...
-              </>
-            ) : (
-              <>
-                🚀 Enter Platform Now
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </>
-            )}
+            🚀 Enter Platform Now
+            <ArrowRight className="ml-2 h-5 w-5" />
           </button>
         </div>
       </section>
@@ -545,6 +513,12 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp }) => {
           </div>
         </div>
       </footer>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 };
