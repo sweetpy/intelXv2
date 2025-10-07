@@ -337,34 +337,28 @@ const Analytics: React.FC = () => {
             </div>
           </div>
           
-          {/* Functional Chart Simulation */}
-          <div className={`bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 rounded-xl p-4 transition-all duration-500 shadow-inner ${isFullscreen ? 'h-96' : 'h-80'}`}>
-            <div className="h-full flex flex-col justify-end space-y-2">
-              {/* Chart bars simulation */}
-              <div className="flex items-end justify-between h-full space-x-2">
-                {Array.from({ length: 12 }, (_, i) => {
-                  const baseHeight = Math.random() * 60 + 20;
-                  const predictiveHeight = predictiveMode ? baseHeight + Math.random() * 20 : baseHeight;
-                  const isCurrentMonth = i === 11;
-                  const isFutureMonth = predictiveMode && i > 8;
-                  return (
-                    <div key={i} className="flex flex-col items-center flex-1">
-                      <div 
-                        className={`w-full rounded-t-xl transition-all duration-1000 hover:scale-105 cursor-pointer shadow-md hover:shadow-lg ${
-                          isCurrentMonth ? 'bg-gradient-to-t from-green-600 to-green-400 animate-glow' : 
-                          isFutureMonth ? 'bg-gradient-to-t from-blue-400 to-cyan-400 opacity-70' :
-                          'bg-gradient-to-t from-blue-600 to-blue-400'
-                        }`}
-                        style={{ height: `${predictiveHeight}%` }}
-                      ></div>
-                      <span className="text-xs text-gray-500 mt-2">
-                        {new Date(2024, i).toLocaleDateString('en', { month: 'short' })}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+          {/* Enhanced Performance Trends Chart */}
+          <div className={`transition-all duration-500 ${isFullscreen ? 'h-96' : 'h-80'}`}>
+            <LineChartComponent
+              data={[
+                { label: 'Jan', value: 1850000000 },
+                { label: 'Feb', value: 1920000000 },
+                { label: 'Mar', value: 2100000000 },
+                { label: 'Apr', value: 2050000000 },
+                { label: 'May', value: 2250000000 },
+                { label: 'Jun', value: 2180000000 },
+                { label: 'Jul', value: 2420000000 },
+                { label: 'Aug', value: 2380000000 },
+                { label: 'Sep', value: 2650000000 },
+                { label: 'Oct', value: predictiveMode ? 2850000000 : 0 },
+                { label: 'Nov', value: predictiveMode ? 3020000000 : 0 },
+                { label: 'Dec', value: predictiveMode ? 3180000000 : 0 }
+              ].filter(d => d.value > 0)}
+              color="#10B981"
+              height={isFullscreen ? 384 : 320}
+              showDots={true}
+              interactive={true}
+            />
           </div>
         </div>
 

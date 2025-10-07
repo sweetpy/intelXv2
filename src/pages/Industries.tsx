@@ -365,34 +365,118 @@ const Industries: React.FC = () => {
             </div>
           </div>
 
-          {/* Tanzania Interactive Map */}
+          {/* Tanzania Interactive Map - Enhanced */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <h3 className="text-xl font-semibold text-gray-900 mb-6">Regional Market Penetration</h3>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-100 to-blue-100 opacity-50"></div>
-                  <div className="text-center z-10">
-                    <MapPin className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 text-lg">Interactive Tanzania Map</p>
-                    <p className="text-gray-400 text-sm">Regional market penetration visualization</p>
-                  </div>
-                  
-                  {/* Mock regional indicators */}
-                  <div className="absolute top-4 right-4 bg-white rounded-lg p-3 shadow-sm">
-                    <h4 className="font-medium text-gray-900 mb-2">Market Penetration</h4>
-                    <div className="space-y-1 text-xs">
+                <div className="h-96 bg-gradient-to-br from-green-50 to-blue-50 rounded-lg relative overflow-hidden">
+                  {/* SVG Tanzania Map */}
+                  <svg viewBox="0 0 600 400" className="w-full h-full">
+                    {/* Background */}
+                    <rect width="600" height="400" fill="url(#mapGradient)" />
+                    <defs>
+                      <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#F0FDF4" />
+                        <stop offset="100%" stopColor="#DBEAFE" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Regional Markers with Size Based on Penetration */}
+                    {/* Dar es Salaam - High Penetration */}
+                    <g className="cursor-pointer transform hover:scale-110 transition-transform duration-300">
+                      <circle cx="480" cy="280" r="35" fill="#10B981" opacity="0.3">
+                        <animate attributeName="r" values="35;38;35" dur="3s" repeatCount="indefinite" />
+                      </circle>
+                      <circle cx="480" cy="280" r="22" fill="#10B981" stroke="white" strokeWidth="3" />
+                      <text x="480" y="318" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Dar es Salaam</text>
+                      <text x="480" y="332" textAnchor="middle" className="text-xs font-bold fill-green-600">89.2%</text>
+                    </g>
+
+                    {/* Mwanza - Medium-High Penetration */}
+                    <g className="cursor-pointer transform hover:scale-110 transition-transform duration-300">
+                      <circle cx="180" cy="120" r="28" fill="#F59E0B" opacity="0.3">
+                        <animate attributeName="r" values="28;31;28" dur="3s" repeatCount="indefinite" />
+                      </circle>
+                      <circle cx="180" cy="120" r="18" fill="#F59E0B" stroke="white" strokeWidth="3" />
+                      <text x="180" y="150" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Mwanza</text>
+                      <text x="180" y="164" textAnchor="middle" className="text-xs font-bold fill-orange-600">64.3%</text>
+                    </g>
+
+                    {/* Arusha - High Penetration */}
+                    <g className="cursor-pointer transform hover:scale-110 transition-transform duration-300">
+                      <circle cx="380" cy="80" r="32" fill="#10B981" opacity="0.3">
+                        <animate attributeName="r" values="32;35;32" dur="3s" repeatCount="indefinite" />
+                      </circle>
+                      <circle cx="380" cy="80" r="20" fill="#10B981" stroke="white" strokeWidth="3" />
+                      <text x="380" y="110" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Arusha</text>
+                      <text x="380" y="124" textAnchor="middle" className="text-xs font-bold fill-green-600">76.8%</text>
+                    </g>
+
+                    {/* Dodoma - Medium Penetration */}
+                    <g className="cursor-pointer transform hover:scale-110 transition-transform duration-300">
+                      <circle cx="330" cy="180" r="25" fill="#F59E0B" opacity="0.3">
+                        <animate attributeName="r" values="25;28;25" dur="3s" repeatCount="indefinite" />
+                      </circle>
+                      <circle cx="330" cy="180" r="16" fill="#F59E0B" stroke="white" strokeWidth="3" />
+                      <text x="330" y="208" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Dodoma</text>
+                      <text x="330" y="222" textAnchor="middle" className="text-xs font-bold fill-orange-600">58.7%</text>
+                    </g>
+
+                    {/* Mbeya - Medium Penetration */}
+                    <g className="cursor-pointer transform hover:scale-110 transition-transform duration-300">
+                      <circle cx="220" cy="300" r="22" fill="#F59E0B" opacity="0.3">
+                        <animate attributeName="r" values="22;25;22" dur="3s" repeatCount="indefinite" />
+                      </circle>
+                      <circle cx="220" cy="300" r="14" fill="#F59E0B" stroke="white" strokeWidth="3" />
+                      <text x="220" y="326" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Mbeya</text>
+                      <text x="220" y="340" textAnchor="middle" className="text-xs font-bold fill-orange-600">45.2%</text>
+                    </g>
+
+                    {/* Kilimanjaro - High Penetration */}
+                    <g className="cursor-pointer transform hover:scale-110 transition-transform duration-300">
+                      <circle cx="420" cy="70" r="30" fill="#10B981" opacity="0.3">
+                        <animate attributeName="r" values="30;33;30" dur="3s" repeatCount="indefinite" />
+                      </circle>
+                      <circle cx="420" cy="70" r="19" fill="#10B981" stroke="white" strokeWidth="3" />
+                      <text x="420" y="98" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Kilimanjaro</text>
+                      <text x="420" y="112" textAnchor="middle" className="text-xs font-bold fill-green-600">71.5%</text>
+                    </g>
+
+                    {/* Tabora - Low Penetration */}
+                    <g className="cursor-pointer transform hover:scale-110 transition-transform duration-300">
+                      <circle cx="200" cy="180" r="18" fill="#EF4444" opacity="0.3">
+                        <animate attributeName="r" values="18;21;18" dur="3s" repeatCount="indefinite" />
+                      </circle>
+                      <circle cx="200" cy="180" r="12" fill="#EF4444" stroke="white" strokeWidth="3" />
+                      <text x="200" y="204" textAnchor="middle" className="text-xs font-semibold fill-gray-700">Tabora</text>
+                      <text x="200" y="218" textAnchor="middle" className="text-xs font-bold fill-red-600">38.4%</text>
+                    </g>
+
+                    {/* Connection Lines showing distribution network */}
+                    <g stroke="#10B981" strokeWidth="2" fill="none" opacity="0.3" strokeDasharray="4,4">
+                      <path d="M 480 280 L 330 180" />
+                      <path d="M 330 180 L 180 120" />
+                      <path d="M 380 80 L 330 180" />
+                      <path d="M 480 280 L 220 300" />
+                    </g>
+                  </svg>
+
+                  {/* Legend */}
+                  <div className="absolute top-4 right-4 bg-white rounded-lg p-3 shadow-lg border border-gray-200">
+                    <h4 className="font-medium text-gray-900 mb-2 text-sm">Market Penetration</h4>
+                    <div className="space-y-1.5 text-xs">
                       <div className="flex items-center">
                         <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                        <span>High (70%+)</span>
+                        <span className="font-medium">High (70%+)</span>
                       </div>
                       <div className="flex items-center">
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                        <span>Medium (40-70%)</span>
+                        <div className="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
+                        <span className="font-medium">Medium (40-70%)</span>
                       </div>
                       <div className="flex items-center">
                         <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                        <span>Low (&lt;40%)</span>
+                        <span className="font-medium">Low (&lt;40%)</span>
                       </div>
                     </div>
                   </div>
