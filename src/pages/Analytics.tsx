@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import TanzaniaMap from '../components/TanzaniaMap';
 import AdvancedAnalytics from '../components/AdvancedAnalytics';
 import BusinessIntelligence from '../components/BusinessIntelligence';
-import { 
+import { LineChart as LineChartComponent, BarChart as CustomBarChart, DonutChart, MetricCard } from '../components/Charts';
+import {
   BarChart3, TrendingUp, PieChart, LineChart, Filter, Download, Calendar, MapPin, RefreshCw,
   AlertCircle, CheckCircle, Clock, DollarSign, Zap, Brain, Eye, Target, Lightbulb,
   TrendingDown, Activity, Wifi, WifiOff, Maximize2, Minimize2

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useLocalization } from '../components/LocalizationProvider';
 import { DashboardService, type SystemStat, type RegionalData, type RecentActivity } from '../services/dashboardService';
+import { LineChart, BarChart as CustomBarChart, DonutChart, ProgressBar } from '../components/Charts';
 
 const Dashboard: React.FC = () => {
   const { formatCurrency, translate, formatDate } = useLocalization();
@@ -235,35 +236,179 @@ const Dashboard: React.FC = () => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Revenue Trend Chart */}
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-lg transition-shadow duration-300">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Revenue Trend</h2>
-            <select className="text-sm border border-gray-300 rounded-md px-3 py-1">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Revenue Trend</h2>
+              <p className="text-sm text-gray-500 mt-1">Last 6 months performance</p>
+            </div>
+            <select className="text-sm border border-gray-300 rounded-md px-3 py-1 focus:ring-2 focus:ring-green-500 focus:border-transparent">
               <option>Last 6 months</option>
               <option>Last year</option>
+              <option>Last quarter</option>
             </select>
           </div>
-          <div className="h-64 flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg">
-            <div className="text-center">
-              <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500">Revenue chart visualization</p>
-              <p className="text-xs text-gray-400 mt-1">Interactive charts coming soon</p>
+          <LineChart
+            data={[
+              { label: 'Apr', value: 2100000000 },
+              { label: 'May', value: 2250000000 },
+              { label: 'Jun', value: 2180000000 },
+              { label: 'Jul', value: 2420000000 },
+              { label: 'Aug', value: 2380000000 },
+              { label: 'Sep', value: 2650000000 }
+            ]}
+            color="#10B981"
+            height={250}
+            showDots={true}
+            interactive={true}
+          />
+        </div>
+
+        {/* Orders by Status */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Orders by Status</h2>
+              <p className="text-sm text-gray-500 mt-1">Current month distribution</p>
             </div>
+          </div>
+          <DonutChart
+            data={[
+              { label: 'Delivered', value: 1856, color: '#10B981' },
+              { label: 'In Transit', value: 342, color: '#3B82F6' },
+              { label: 'Processing', value: 156, color: '#F59E0B' },
+              { label: 'Pending', value: 89, color: '#EF4444' }
+            ]}
+            size={200}
+            thickness={35}
+            showPercentages={true}
+            interactive={true}
+          />
+        </div>
+      </div>
+
+      {/* Sales by Region */}
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Sales by Region</h2>
+            <p className="text-sm text-gray-500 mt-1">Top performing regions this month</p>
+          </div>
+          <button className="text-green-600 hover:text-green-700 text-sm font-medium flex items-center">
+            <Download className="h-4 w-4 mr-1" />
+            Export
+          </button>
+        </div>
+        <CustomBarChart
+          data={[
+            { label: 'Dar es Salaam', value: 580000000, color: '#10B981' },
+            { label: 'Mwanza', value: 320000000, color: '#3B82F6' },
+            { label: 'Arusha', value: 280000000, color: '#8B5CF6' },
+            { label: 'Dodoma', value: 195000000, color: '#F59E0B' },
+            { label: 'Mbeya', value: 165000000, color: '#EC4899' },
+            { label: 'Morogoro', value: 145000000, color: '#6366F1' }
+          ]}
+          height={280}
+          showValues={true}
+          interactive={true}
+        />
+      </div>
+
+      {/* Distribution Metrics */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Distribution Efficiency</h2>
+          <div className="space-y-6">
+            <ProgressBar
+              label="Route Optimization"
+              value={92}
+              max={100}
+              color="#10B981"
+              showPercentage={true}
+              height={10}
+            />
+            <ProgressBar
+              label="On-Time Delivery"
+              value={88}
+              max={100}
+              color="#3B82F6"
+              showPercentage={true}
+              height={10}
+            />
+            <ProgressBar
+              label="Vehicle Utilization"
+              value={76}
+              max={100}
+              color="#F59E0B"
+              showPercentage={true}
+              height={10}
+            />
+            <ProgressBar
+              label="Customer Satisfaction"
+              value={94}
+              max={100}
+              color="#8B5CF6"
+              showPercentage={true}
+              height={10}
+            />
           </div>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Distribution Coverage</h2>
-            <button className="text-green-600 hover:text-green-700 text-sm font-medium">
-              View Map
-            </button>
-          </div>
-          <div className="h-64 flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 rounded-lg">
-            <div className="text-center">
-              <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500">Tanzania coverage map</p>
-              <p className="text-xs text-gray-400 mt-1">26 regions covered</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Monthly Targets</h2>
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Revenue Target</span>
+                <span className="text-sm font-semibold text-gray-900">TSh 2.8B / TSh 3.0B</span>
+              </div>
+              <ProgressBar
+                value={2800000000}
+                max={3000000000}
+                color="#10B981"
+                showPercentage={true}
+                height={10}
+              />
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">New Customers</span>
+                <span className="text-sm font-semibold text-gray-900">142 / 200</span>
+              </div>
+              <ProgressBar
+                value={142}
+                max={200}
+                color="#3B82F6"
+                showPercentage={true}
+                height={10}
+              />
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Orders Fulfilled</span>
+                <span className="text-sm font-semibold text-gray-900">1,856 / 2,000</span>
+              </div>
+              <ProgressBar
+                value={1856}
+                max={2000}
+                color="#F59E0B"
+                showPercentage={true}
+                height={10}
+              />
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Route Coverage</span>
+                <span className="text-sm font-semibold text-gray-900">24 / 26 regions</span>
+              </div>
+              <ProgressBar
+                value={24}
+                max={26}
+                color="#8B5CF6"
+                showPercentage={true}
+                height={10}
+              />
             </div>
           </div>
         </div>
