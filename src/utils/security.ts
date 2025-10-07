@@ -2,10 +2,7 @@
 import CryptoJS from 'crypto-js';
 
 // Environment configuration
-const encryptionKey = import.meta.env.VITE_ENCRYPTION_KEY;
-if (!encryptionKey) {
-  throw new Error('Missing VITE_ENCRYPTION_KEY environment variable');
-}
+const encryptionKey = import.meta.env.VITE_ENCRYPTION_KEY || 'intelX-default-encryption-key-2025';
 
 export const SECURITY_CONFIG = {
   SESSION_TIMEOUT: 30 * 60 * 1000, // 30 minutes
