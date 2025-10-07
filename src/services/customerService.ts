@@ -17,8 +17,7 @@ export class CustomerService {
       .from('customers')
       .select(`
         *,
-        account_manager:users!customers_account_manager_id_fkey(name, email),
-        distributor:distributors(*)
+        account_manager:users!customers_account_manager_id_fkey(name, email)
       `);
 
     if (filters?.region && filters.region !== 'all') {
@@ -50,11 +49,10 @@ export class CustomerService {
       .select(`
         *,
         account_manager:users!customers_account_manager_id_fkey(name, email),
-        distributor:distributors(*),
         orders(id, order_number, status, total_amount, order_date)
       `)
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
     return data;
