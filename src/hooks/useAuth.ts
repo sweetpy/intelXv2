@@ -359,20 +359,35 @@ export const useAuth = () => {
 
 // Simulate login API call
 const simulateLogin = async (credentials: LoginCredentials): Promise<LoginResult> => {
+  // Try Supabase authentication with timeout
   try {
-    // Try Supabase authentication first
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const authPromise = supabase.auth.signInWithPassword({
       email: credentials.email,
       password: credentials.password
     });
 
-    if (data.user && !error) {
-      // Get user profile from database
-      const { data: profile, error: profileError } = await supabase
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Auth timeout')), 2000)
+    );
+
+    const { data, error } = await Promise.race([authPromise, timeoutPromise]);
+
+    if (data?.user && !error) {
+      // Get user profile from database with timeout
+      const profilePromise = supabase
         .from('users')
         .select('*')
         .eq('email', credentials.email)
-        .single();
+        .maybeSingle();
+
+      const profileTimeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Profile timeout')), 2000)
+      );
+
+      const { data: profile, error: profileError } = await Promise.race([
+        profilePromise,
+        profileTimeoutPromise
+      ]);
 
       if (profile && !profileError) {
         return {
@@ -393,11 +408,11 @@ const simulateLogin = async (credentials: LoginCredentials): Promise<LoginResult
       }
     }
   } catch (supabaseError) {
-    console.log('Supabase auth failed, falling back to demo mode');
+    console.log('Supabase auth failed, using demo mode:', supabaseError);
   }
 
   // Fallback to demo authentication
-  await new Promise(resolve => setTimeout(resolve, 100));
+  await new Promise(resolve => setTimeout(resolve, 200));
 
   // Demo credentials for testing
   const demoUsers: Record<string, User> = {
