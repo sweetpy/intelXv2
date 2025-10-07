@@ -408,13 +408,46 @@ const simulateLogin = async (credentials: LoginCredentials): Promise<LoginResult
       }
     }
   } catch (supabaseError) {
-    console.log('Supabase auth failed, using demo mode:', supabaseError);
+    console.log('Supabase auth failed, checking database users:', supabaseError);
+  }
+
+  // Try to find user in database directly (for testing/demo purposes)
+  try {
+    const { data: dbUser, error: dbError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', credentials.email)
+      .maybeSingle();
+
+    if (dbUser && !dbError) {
+      console.log('Found user in database:', dbUser.email);
+      // Accept any reasonable password for database users (demo mode)
+      if (credentials.password.length >= 6) {
+        return {
+          success: true,
+          user: {
+            id: dbUser.id,
+            email: dbUser.email,
+            name: dbUser.name,
+            role: dbUser.role,
+            permissions: dbUser.permissions,
+            lastLogin: new Date(),
+            mfaEnabled: dbUser.mfa_enabled || false,
+            company: dbUser.company,
+            region: dbUser.region,
+            avatar: dbUser.avatar_url
+          }
+        };
+      }
+    }
+  } catch (dbError) {
+    console.log('Database user lookup failed:', dbError);
   }
 
   // Fallback to demo authentication
   await new Promise(resolve => setTimeout(resolve, 200));
 
-  // Demo credentials for testing
+  // Demo credentials for testing (legacy fallback)
   const demoUsers: Record<string, User> = {
     'admin@intellx.co.tz': {
       id: '1',
